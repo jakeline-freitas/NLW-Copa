@@ -9,8 +9,6 @@ import { Button } from "../components/Button"
 export function SignIn(){
     const { user, signIn } = useAuth();
 
-    console.log("DADOS DO USUÁRIO => ", user)
-
     return(
     <Center flex={1} bgColor="gray.900" p={7}>       
         <Logo width={212} height={40}/>
