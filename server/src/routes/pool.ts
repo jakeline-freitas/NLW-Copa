@@ -53,6 +53,7 @@ export async function poolRoutes(fastify: FastifyInstance){
         return reply.status(201).send({ code })
     })
 
+    //entrar em um bolão
     fastify.post("/pools/:id/join", {
         onRequest: [authenticate]
     }, async (request, reply) => {
@@ -109,4 +110,45 @@ export async function poolRoutes(fastify: FastifyInstance){
         return reply.status(201).send()
 
     })
+
+    //bolões que o usuário atual participa
+    fastify.get("/pools", {
+        onRequest: [authenticate]
+    }, async (request) => {
+        const pools =  await prisma.pool.findMany({
+            where: {
+                participants: {
+                    some:{
+                        userId: request.user.sub,
+                    }
+                }
+            },
+            include: {
+                _count: {
+                    select: {
+                        participants: true,
+                    }
+                },
+                participants: {
+                    select: {
+                        id: true,
+                        user: {
+                            select: {
+                                avatarUrl: true,
+                            }
+                        }
+                    },
+                    take: 4,
+                },
+                owner: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                }
+            }
+        }) 
+        return { pools }
+    })
+
 }
